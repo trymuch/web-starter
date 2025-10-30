@@ -6,13 +6,14 @@ use tokio::net::TcpListener;
 use tracing::info;
 
 mod configuration;
+mod database;
 mod logger;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     unsafe {
         env::set_var("RUST_LOG", "trace");
-        env::set_var("APP_CONFIG_SERVER.HOST", "localhost");
+        env::set_var("APP_CONFIG_SERVER__HOST", "localhost");
         // env::set_var("APP_CONFIG__SERVER__PORT", "3000");
     }
     logger::init()?;

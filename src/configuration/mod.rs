@@ -20,7 +20,7 @@ impl AppConfig {
             .add_source(
                 config::Environment::with_prefix("APP_CONFIG")
                     .prefix_separator("_")
-                    .separator(".")
+                    .separator("__")
                     .try_parsing(true)
                     .convert_case(config::Case::Snake),
             )

@@ -12,7 +12,8 @@ mod logger;
 async fn main() -> anyhow::Result<()> {
     unsafe {
         env::set_var("RUST_LOG", "trace");
-        env::set_var("APP_CONFIG.SERVER.HOST", "localhost");
+        env::set_var("APP_CONFIG_SERVER.HOST", "localhost");
+        // env::set_var("APP_CONFIG__SERVER__PORT", "3000");
     }
     logger::init()?;
 

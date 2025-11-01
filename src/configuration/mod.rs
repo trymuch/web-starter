@@ -1,14 +1,18 @@
-mod server;
-
-use std::sync::LazyLock;
+#![allow(unused)]
 
 use anyhow::Context;
 use serde::Deserialize;
+use std::sync::LazyLock;
+
+pub(crate) use database::DatabaseConfig;
 pub(crate) use server::ServerConfig;
 
+mod database;
+mod server;
 #[derive(Debug, Deserialize)]
 pub(crate) struct AppConfig {
-    pub(crate) server: ServerConfig,
+    server: ServerConfig,
+    database: DatabaseConfig,
 }
 
 impl AppConfig {
@@ -27,21 +31,26 @@ impl AppConfig {
             .build()
             .with_context(|| "Failed to load configuration")?;
 
-        tracing::info!("configuration loaded from file source and environment variables");
-
         let app_config = settings
             .try_deserialize()
             .with_context(|| "Failed to deserialize configuration")?;
 
-        tracing::info!("application configuration parsed");
+        tracing::info!("application configuration loaded");
 
         Ok(app_config)
+    }
+
+    pub(crate) fn server(&self) -> &ServerConfig {
+        &self.server
+    }
+
+    pub(crate) fn database(&self) -> &DatabaseConfig {
+        &self.database
     }
 }
 
 static APP_CONFIG: LazyLock<AppConfig> = LazyLock::new(|| {
     let app_config = AppConfig::load().expect("Failed to initialize configuration");
-    tracing::info!("application configuration initialized");
     app_config
 });
 

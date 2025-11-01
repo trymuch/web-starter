@@ -1,11 +1,20 @@
-use std::{cmp::max, time::Duration};
+#![allow(unused)]
 
 use anyhow::{Context, Ok};
 use sea_orm::{ConnectionTrait, Database, DatabaseConnection, Statement};
+use std::{cmp::max, time::Duration};
 
-pub(crate) async fn init() -> anyhow::Result<DatabaseConnection> {
-    let mut options =
-        sea_orm::ConnectOptions::new("postgresql://postgres:201030@postgres:5432/mydb");
+use crate::configuration::DatabaseConfig;
+
+pub(crate) async fn init(db_config: &DatabaseConfig) -> anyhow::Result<DatabaseConnection> {
+    let mut options = sea_orm::ConnectOptions::new(format!(
+        "postgresql://{}:{}@{}:{}/{}",
+        db_config.username(),
+        db_config.password(),
+        db_config.host(),
+        db_config.port(),
+        db_config.database()
+    ));
     let cpus = num_cpus::get() as u32;
     options
         .min_connections(max(cpus * 4, 10))
@@ -42,13 +51,17 @@ async fn database_version(conn: &DatabaseConnection) -> anyhow::Result<String> {
 
 #[cfg(test)]
 mod tests {
+    use crate::configuration::{self, AppConfig};
+
     use super::*;
     use tokio::test;
 
     #[test]
     async fn test_database_version() -> anyhow::Result<()> {
-        let conn = init().await?;
+        let db_config = configuration::get().database();
+        let conn = init(db_config).await?;
         let version = database_version(&conn).await?;
+        println!("Database version: {}", version);
         assert!(version.contains("PostgreSQL"));
         Ok(())
     }

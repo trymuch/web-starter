@@ -12,9 +12,9 @@ pub fn create_router() -> Router<AppState> {
         .nest(
             "/api",
             Router::new()
-                .merge(user::create_router())
+                .nest("/users", user::create_router())
                 .fallback(async || -> ApiResult<()> {
-                    tracing::warn!("Not found");
+                    tracing::warn!("请求的资源Not found");
                     Err(ApiError::NotFound)
                 }),
         )

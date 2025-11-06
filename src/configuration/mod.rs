@@ -49,9 +49,8 @@ impl AppConfig {
     }
 }
 
-static APP_CONFIG: LazyLock<AppConfig> = LazyLock::new(|| {
-    let app_config = AppConfig::load().expect("Failed to initialize configuration");
-    app_config
+static APP_CONFIG: LazyLock<AppConfig> = LazyLock::new(|| { 
+    AppConfig::load().expect("Failed to initialize configuration")
 });
 
 pub(crate) fn get() -> &'static AppConfig {

@@ -1,10 +1,11 @@
-
 mod api;
 mod app;
+mod common;
 mod configuration;
 mod database;
 mod entity;
 mod error;
+mod latency;
 mod logger;
 mod response;
 mod server;
